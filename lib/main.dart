@@ -124,9 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 */
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import 'home_page.dart';
+import 'package:provider/provider.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
+import 'classes/noteData.dart';
+import 'screens/home_page.dart';
 
 /*
 void main() async {
@@ -144,9 +145,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => NoteData(),
+        builder: (context, child) => const MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: HomePage(),
+            ));
   }
 }
