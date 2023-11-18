@@ -4,6 +4,7 @@ import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/noteData.dart';
 import 'package:myapp/screens/noteview.dart';
 import 'package:provider/provider.dart';
+//import 'package:flutter_quill/flutter_quill.dart';
 
 class HomePage extends StatefulWidget {
   //const HomePage({Key? key}) : super(key: key);
@@ -14,8 +15,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Note createNewNotes() {
-    Note newNote = Note(id: 1, text: 'added note');
+    int id = Provider.of<NoteData>(context, listen: false).GetNoteList().length;
+    Note newNote = Note(id: id, text: 'added note');
     return newNote;
+  }
+
+  void CreateNewNote() {
+    int id = Provider.of<NoteData>(context, listen: false).GetNoteList().length;
+    Note newNote = Note(id: id, text: 'added note');
+    Provider.of<NoteData>(context, listen: false).CreateNewNote(newNote);
+    GoToEditNotePage(newNote, true);
+  }
+
+  void GoToEditNotePage(Note note, bool isNewNote) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NoteView(note: note, isNewNote: isNewNote)));
+  }
+
+  void deleteNote(Note note) {
+    Provider.of<NoteData>(context, listen: false).DeleteNote(note);
   }
 
   @override
@@ -30,12 +50,7 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: const Color.fromARGB(255, 204, 173, 60),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Provider.of<NoteData>(context, listen: false)
-                    .CreateNewNote(createNewNotes());
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const NoteView()));
-              },
+              onPressed: CreateNewNote,
               child: const Icon(Icons.add),
             ),
             body: Column(

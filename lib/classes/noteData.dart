@@ -17,6 +17,10 @@ class NoteData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void DeleteNote(Note note) {
+    NoteList.removeAt(NoteList.indexOf(note));
+  }
+
   // need a delete note function
 
   // need a function that loads the notes data (an update function maybe?)
