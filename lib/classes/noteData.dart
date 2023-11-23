@@ -18,7 +18,18 @@ class NoteData extends ChangeNotifier {
   }
 
   void DeleteNote(Note note) {
-    NoteList.removeAt(NoteList.indexOf(note));
+    NoteList.removeWhere((n) => n.id == note.id);
+    notifyListeners();
+  }
+
+  void updateNote(int id, String newText) {
+    for (var note in NoteList) {
+      if (note.id == id) {
+        note.text = newText;
+        break; // Stop the loop once the note is found and updated
+      }
+    }
+    notifyListeners();
   }
 
   // need a delete note function

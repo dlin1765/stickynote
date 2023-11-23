@@ -67,9 +67,21 @@ class _HomePageState extends State<HomePage> {
                           value.GetNoteList().length,
                           (index) => Card(
                                 elevation: 10,
-                                child: Text(value.GetNoteList()[index].text),
+                                child: ListTile(
+                                  title: Text(value.GetNoteList()[index].text),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      // Assuming you have access to NoteData
+                                      Provider.of<NoteData>(context,
+                                              listen: false)
+                                          .DeleteNote(
+                                              value.GetNoteList()[index]);
+                                    },
+                                  ),
+                                ),
                               ))),
-                )
+                ),
               ],
             )));
   }
