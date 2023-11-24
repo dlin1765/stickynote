@@ -31,8 +31,4 @@ class NoteData extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  // need a delete note function
-
-  // need a function that loads the notes data (an update function maybe?)
 }

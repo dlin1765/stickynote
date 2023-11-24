@@ -14,16 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Note createNewNotes() {
-    int id = Provider.of<NoteData>(context, listen: false).GetNoteList().length;
-    Note newNote = Note(id: id, text: 'added note');
-    return newNote;
-  }
-
   void CreateNewNote() {
-    int id = Provider.of<NoteData>(context, listen: false).GetNoteList().length;
-    Note newNote = Note(id: id, text: 'added note');
-    Provider.of<NoteData>(context, listen: false).CreateNewNote(newNote);
+    int id =
+        DateTime.now().millisecondsSinceEpoch; // Unique ID based on timestamp
+    Note newNote = Note(id: id, text: '');
+    //Provider.of<NoteData>(context, listen: false).CreateNewNote(newNote);
     GoToEditNotePage(newNote, true);
   }
 
@@ -31,7 +26,11 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => NoteView(note: note, isNewNote: isNewNote)));
+            builder: (context) => NoteView(
+                  note: note,
+                  isNewNote: isNewNote,
+                  noteData: Provider.of<NoteData>(context, listen: false),
+                )));
   }
 
   void deleteNote(Note note) {
@@ -62,25 +61,44 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Expanded(
                   child: GridView.count(
-                      crossAxisCount: 2,
-                      children: List.generate(
-                          value.GetNoteList().length,
-                          (index) => Card(
-                                elevation: 10,
-                                child: ListTile(
-                                  title: Text(value.GetNoteList()[index].text),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      // Assuming you have access to NoteData
-                                      Provider.of<NoteData>(context,
-                                              listen: false)
-                                          .DeleteNote(
-                                              value.GetNoteList()[index]);
-                                    },
-                                  ),
+                    crossAxisCount: 2,
+                    children: List.generate(
+                      value.GetNoteList().length,
+                      (index) {
+                        final note = value.GetNoteList()[index];
+                        return Card(
+                          elevation: 10,
+                          child: ListTile(
+                            title: Text(note.title ?? '无标题'), // Title
+                            subtitle: Text(note.text), // Text
+                            trailing: PopupMenuButton<String>(
+                              onSelected: (String result) {
+                                if (result == 'edit') {
+                                  // Edit note in homepage
+                                  GoToEditNotePage(note, false);
+                                } else if (result == 'delete') {
+                                  // delete note in homepage
+                                  Provider.of<NoteData>(context, listen: false)
+                                      .DeleteNote(note);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'edit',
+                                  child: Text('Edit'),
                                 ),
-                              ))),
+                                const PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ],
             )));

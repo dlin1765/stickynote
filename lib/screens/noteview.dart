@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:myapp/classes/note.dart';
+import 'package:myapp/classes/noteData.dart';
 
 class NoteView extends StatefulWidget {
-  Note note;
-  bool isNewNote;
+  final Note note;
+  final bool isNewNote;
+  final NoteData noteData;
   NoteView({
     super.key,
     required this.note,
     required this.isNewNote,
+    required this.noteData,
   });
 
   @override
@@ -46,6 +49,15 @@ class _NoteViewState extends State<NoteView> {
               // Logic to save the edited note
               widget.note.title = _titleController.text;
               widget.note.text = _textController.text;
+
+              // New code to update the note in NoteData
+              if (widget.isNewNote) {
+                widget.noteData
+                    .CreateNewNote(widget.note); // Add only if it's a new note
+              } else {
+                widget.noteData.updateNote(
+                    widget.note.id, widget.note.text); // Update existing note
+              }
               Navigator.pop(context);
             },
           ),
