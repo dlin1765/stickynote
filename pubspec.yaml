@@ -30,7 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+  flutter_local_notifications:  ^9.7.0 # added to fulfill the notification function
+  timezone: ^0.8.0   # Add the timezone package
+  permission_handler: ^9.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -38,8 +40,16 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   provider:
+  
+  
   flutter_quill: ^8.6.1
   #flutter_quill: ^6.4.4
+  
+
+
+  
+
+
 
   
 dev_dependencies:
@@ -47,7 +57,7 @@ dev_dependencies:
     sdk: flutter
   hive_generator: ^2.0.1
   build_runner: ^2.1.11
-
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
