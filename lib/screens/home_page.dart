@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                         return Card(
                           elevation: 10,
                           child: ListTile(
-                            title: Text(note.title ?? '无标题'), // Title
+                            title: Text(note.title ?? 'No Title'), // Title
                             subtitle: Text(note.text), // Text
                             trailing: PopupMenuButton<String>(
                               onSelected: (String result) {
