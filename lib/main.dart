@@ -128,6 +128,7 @@ import 'package:provider/provider.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/noteData.dart';
 import 'screens/home_page.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /*
 void main() async {
@@ -136,7 +137,27 @@ void main() async {
   var box = await Hive.openBox('mybox');
 }
 */
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize the FlutterLocalNotificationsPlugin
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings(
+          'app_icon'); // Replace with your app's icon name
+
+  final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings();
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
   runApp(const MyApp());
 }
 
@@ -147,9 +168,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => NoteData(),
-        builder: (context, child) => const MaterialApp(
+        builder: (context, child) => MaterialApp(
               debugShowCheckedModeBanner: false,
               home: HomePage(),
+              theme: ThemeData(primarySwatch: Colors.yellow),
             ));
   }
 }

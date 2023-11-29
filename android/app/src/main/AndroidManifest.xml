@@ -29,5 +29,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="my_channel_id" 
+            android:value="2" />
     </application>
 </manifest>
