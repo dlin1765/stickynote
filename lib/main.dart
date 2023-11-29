@@ -124,6 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 */
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/noteData.dart';
@@ -140,6 +142,9 @@ void main() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Hive.initFlutter();
+
+  var box = await Hive.openBox('mydata');
   // Initialize the FlutterLocalNotificationsPlugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();

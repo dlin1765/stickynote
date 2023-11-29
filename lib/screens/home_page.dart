@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/noteData.dart';
 import 'package:myapp/screens/noteview.dart';
+import 'package:myapp/screens/reminderview.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -15,6 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Note> notes = []; // Use a List for notes
+
+  // HOME PAGE SHOULD PROBABLY HAVE A LIST OF REMINDERS TOO
 
   // Initialize the notification plugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -54,7 +58,8 @@ class _HomePageState extends State<HomePage> {
   void CreateNewNote() {
     int id =
         DateTime.now().millisecondsSinceEpoch; // Unique ID based on timestamp
-    Note newNote = Note(id: id, text: '', reminderTime: DateTime.now());
+    Note newNote =
+        Note(id: id, text: '', reminderTime: DateTime.now(), reminderList: []);
     GoToEditNotePage(newNote, true);
   }
 
@@ -65,6 +70,16 @@ class _HomePageState extends State<HomePage> {
             builder: (context) => NoteView(
                   note: note,
                   isNewNote: isNewNote,
+                  noteData: Provider.of<NoteData>(context, listen: false),
+                )));
+  }
+
+  void GoToReminderPage(Note note) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ReminderView(
+                  note: note,
                   noteData: Provider.of<NoteData>(context, listen: false),
                 )));
   }
@@ -122,7 +137,6 @@ class _HomePageState extends State<HomePage> {
                   notes.length,
                   (index) {
                     final note = notes[index];
-
                     DateTime now = DateTime.now();
                     Duration remainingDuration =
                         note.reminderTime.difference(now);
@@ -134,14 +148,26 @@ class _HomePageState extends State<HomePage> {
 
                     return Card(
                       elevation: 10,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: Text(note.title ?? '无标题'),
-                            // Display note title
-                            subtitle: Text(note.text),
-                            // Display note text
-                          ),
+                      color: Colors.yellow[300],
+                      child: Container(
+                        height: 400,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                note.title ?? '无标题',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              contentPadding: EdgeInsets.all(10.0),
+                              // Display note title
+                              subtitle: Text(
+                                note.text,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              // Display note text
+                            ),
+
+                            /*
                           Text(
                             'Time Remaining: $timeRemaining',
                             style: TextStyle(
@@ -150,34 +176,44 @@ class _HomePageState extends State<HomePage> {
                             ),
                             // Display time remaining
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              PopupMenuButton<String>(
-                                onSelected: (String result) {
-                                  if (result == 'edit') {
-                                    GoToEditNotePage(note, false);
-                                  } else if (result == 'delete') {
-                                    Provider.of<NoteData>(context,
-                                            listen: false)
-                                        .DeleteNote(note);
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: Text('Edit'),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Text('Delete'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                          */
+
+                            //THIS DISPLAYS THE ID OF THE NOTE JUST SO I CAN DEBUG
+                            //Text(note.id.toString()),
+                            Spacer(
+                              flex: 2,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                PopupMenuButton<String>(
+                                  onSelected: (String result) {
+                                    if (result == 'edit') {
+                                      String temp = note.text;
+                                      print('this is what the note has $temp');
+                                      GoToEditNotePage(notes[index], false);
+                                    } else if (result == 'delete') {
+                                      Provider.of<NoteData>(context,
+                                              listen: false)
+                                          .DeleteNote(note);
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                    const PopupMenuItem<String>(
+                                      value: 'edit',
+                                      child: Text('Edit'),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

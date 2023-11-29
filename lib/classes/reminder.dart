@@ -1,20 +1,20 @@
-import 'package:myapp/classes/reminder.dart';
-
-class Note {
+class Reminder {
   final int id;
   String title;
   String text;
+  bool isDone;
   DateTime reminderTime; //Use DateTime for reminder time
-  List<Reminder> reminderList;
+  DateTime destroyTime;
   /*
   I want the note to be able to store other widgets inside, so might have to have fields not just a string for the data
   
   */
-  Note({
+  Reminder({
     required this.id,
     required this.text,
+    this.isDone = true,
     this.title = '',
     required this.reminderTime, // Add this parameter to the constructor
-    required this.reminderList,
+    required this.destroyTime,
   });
 }

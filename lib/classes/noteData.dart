@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/classes/reminder.dart';
 import 'note.dart';
 //import 'package:provider/provider.dart';
 
 class NoteData extends ChangeNotifier {
+  List<Reminder> temps = [];
   List<Note> NoteList = [
     Note(
         id: 0,
         text: "test note",
-        reminderTime: DateTime.now()), // Include reminderTime
+        reminderTime: DateTime.now(),
+        reminderList: []), // Include reminderTime
     Note(
         id: 1,
         text: "test note 2",
-        reminderTime: DateTime.now()), // Include reminderTime
+        reminderTime: DateTime.now(),
+        reminderList: []), // Include reminderTime
   ];
 
   List<Note> GetNoteList() {
@@ -28,7 +32,10 @@ class NoteData extends ChangeNotifier {
     notifyListeners();
   }
 
+  // void CreateReminder()
+
   void updateNote(int id, String newText, DateTime? reminderTime) {
+    // need to edit this function to update the reminders field in note
     for (var note in NoteList) {
       if (note.id == id) {
         note.text = newText;
@@ -38,6 +45,7 @@ class NoteData extends ChangeNotifier {
         break; // Stop the loop once the note is found and updated
       }
     }
+
     notifyListeners();
   }
 }
