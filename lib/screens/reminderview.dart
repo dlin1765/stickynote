@@ -1,18 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/reminder.dart';
 import 'package:myapp/classes/noteData.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:myapp/util/ReminderBox.dart';
 import 'package:myapp/util/reminderwidget.dart';
 import 'package:provider/provider.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class ReminderView extends StatefulWidget {
   final Note note;
@@ -30,7 +25,7 @@ class ReminderView extends StatefulWidget {
 
 class ReminderViewState extends State<ReminderView> {
   final _controller = TextEditingController();
-  // add functionality to make the check box clickable
+
   void ClickedCheckBox(bool value, int index) {
     setState(() {
       var reminderTemp = widget.note.reminderList[index];
@@ -68,6 +63,46 @@ class ReminderViewState extends State<ReminderView> {
     Navigator.of(context).pop();
   }
 
+  void editReminder(Reminder reminder) {
+    _controller.text = reminder.text; // Set the current text in the controller
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Reminder'),
+          content: TextField(
+            controller: _controller,
+            decoration: InputDecoration(hintText: "Edit reminder text"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                setState(() {
+                  reminder.text = _controller.text; // Update the reminder text
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void deleteReminder(Reminder reminder) {
+    setState(() {
+      widget.note.reminderList.remove(reminder);
+    });
+    // Update the provider or database if needed
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,41 +113,22 @@ class ReminderViewState extends State<ReminderView> {
         elevation: 0,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          /*
-          widget.note.reminderList.add(Reminder(
-              id: widget.note.reminderList.length,
-              text: '',
-              reminderTime: widget.note.reminderTime,
-              destroyTime: DateTime(2020)));
-          */
-          createNewTask();
-          // Provider.of<NoteData>(context));
-        },
+        onPressed: createNewTask,
         child: Icon(Icons.add),
         focusColor: Colors.blueGrey[300],
       ),
       body: ListView.builder(
-          itemCount: widget.note.reminderList.length,
-          itemBuilder: (context, index) {
-            return ReminderWidget(
-              WidgetReminder: widget.note.reminderList[index],
-              OnChanged: (value) => ClickedCheckBox(value!, index),
-            );
-          }
-          /*
-        children: [
-          ReminderWidget( 
-              WidgetReminder: Reminder(
-                  id: 0,
-                  text: "aye",
-                  isDone: false,
-                  reminderTime: DateTime(2020),
-                  destroyTime: DateTime(2020)),
-              OnChanged: (p0) {}),
-        ],
-        */
-          ),
+        itemCount: widget.note.reminderList.length,
+        itemBuilder: (context, index) {
+          var reminder = widget.note.reminderList[index];
+          return ReminderWidget(
+            widgetReminder: reminder,
+            onChanged: (value) => ClickedCheckBox(value!, index),
+            onEdit: (Reminder r) => editReminder(r),
+            onDelete: (Reminder r) => deleteReminder(r),
+          );
+        },
+      ),
     );
   }
 }

@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:myapp/classes/reminder.dart';
 
 class ReminderWidget extends StatelessWidget {
-  // ignore: non_constant_identifier_names
-  final Reminder WidgetReminder;
-  Function(bool?)? OnChanged;
+  final Reminder widgetReminder;
+  final Function(bool?)? onChanged;
+  final Function(Reminder) onEdit;
+  final Function(Reminder) onDelete;
 
   ReminderWidget({
     super.key,
-    required this.WidgetReminder,
-    required this.OnChanged,
+    required this.widgetReminder,
+    this.onChanged,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -21,18 +24,19 @@ class ReminderWidget extends StatelessWidget {
         decoration: BoxDecoration(color: Colors.yellow),
         child: Row(
           children: [
-            Checkbox(value: WidgetReminder.isDone, onChanged: OnChanged),
+            Checkbox(value: widgetReminder.isDone, onChanged: onChanged),
             Text(
-              WidgetReminder.text,
+              widgetReminder.text,
               overflow: TextOverflow.ellipsis,
             ),
-            Spacer(
-              flex: 3,
-            ),
+            Spacer(),
             PopupMenuButton<String>(
               onSelected: (String result) {
                 if (result == 'edit') {
-                } else if (result == 'delete') {}
+                  onEdit(widgetReminder);
+                } else if (result == 'delete') {
+                  onDelete(widgetReminder);
+                }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 const PopupMenuItem<String>(
@@ -45,11 +49,6 @@ class ReminderWidget extends StatelessWidget {
                 ),
               ],
             ),
-
-            /*
-            itemBuilder: (BuildContext context) =>
-                                    
-                                  */
           ],
         ),
       ),
