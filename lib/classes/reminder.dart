@@ -3,6 +3,8 @@ class Reminder {
   String title;
   String text;
   bool isDone;
+  bool deleteOnCompletion;
+  bool hasReminder;
   DateTime reminderTime; //Use DateTime for reminder time
   DateTime destroyTime;
   /*
@@ -12,7 +14,9 @@ class Reminder {
   Reminder({
     required this.id,
     required this.text,
+    this.deleteOnCompletion = false,
     this.isDone = true,
+    this.hasReminder = false,
     this.title = '',
     required this.reminderTime, // Add this parameter to the constructor
     required this.destroyTime,

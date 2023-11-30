@@ -15,44 +15,6 @@ import 'package:timezone/timezone.dart' as tz;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-class NotesEmbedBuilder extends EmbedBuilder {
-  NotesEmbedBuilder({required this.addEditNote});
-
-  Future<void> Function(BuildContext context, {Document? document}) addEditNote;
-
-  @override
-  String get key => 'notes';
-
-  @override
-  Widget build(
-    BuildContext context,
-    QuillController controller,
-    Embed node,
-    bool readOnly,
-    bool inline,
-    TextStyle textStyle,
-  ) {
-    final notes = NotesBlockEmbed(node.value.data).document;
-
-    return Material(
-      color: Colors.transparent,
-      child: ListTile(
-        title: Text(
-          notes.toPlainText().replaceAll('\n', ' '),
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-        ),
-        leading: const Icon(Icons.notes),
-        onTap: () => addEditNote(context, document: notes),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: const BorderSide(color: Colors.grey),
-        ),
-      ),
-    );
-  }
-}
-
 class NoteView extends StatefulWidget {
   final Note note;
   final bool isNewNote;

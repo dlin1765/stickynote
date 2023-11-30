@@ -6,6 +6,12 @@ class ReminderWidget extends StatelessWidget {
   final Function(bool?)? onChanged;
   final Function(Reminder) onEdit;
   final Function(Reminder) onDelete;
+  final Function(Reminder) onEditDate;
+  final Function(Reminder) onEditTime;
+  final Function(Reminder) toggleTimeView;
+  final Function(Reminder) toggleAutoDelete;
+  late TimeOfDay selectedTime;
+  late DateTime selectedDate;
 
   ReminderWidget({
     super.key,
@@ -13,6 +19,10 @@ class ReminderWidget extends StatelessWidget {
     this.onChanged,
     required this.onEdit,
     required this.onDelete,
+    required this.onEditDate,
+    required this.onEditTime,
+    required this.toggleTimeView,
+    required this.toggleAutoDelete,
   });
 
   @override
@@ -30,12 +40,29 @@ class ReminderWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Spacer(),
+            Text((() {
+              if (widgetReminder.hasReminder) {
+                return widgetReminder.reminderTime.toString().substring(0, 16);
+              } else {
+                return " ";
+              }
+            })()),
+            //widgetReminder.reminderTime.toString().substring(0, 16)
             PopupMenuButton<String>(
               onSelected: (String result) {
                 if (result == 'edit') {
                   onEdit(widgetReminder);
                 } else if (result == 'delete') {
                   onDelete(widgetReminder);
+                } else if (result == 'autodelete') {
+                } else if (result == 'editdate') {
+                  onEditDate(widgetReminder);
+                } else if (result == 'edittime') {
+                  onEditTime(widgetReminder);
+                } else if (result == 'deletewhen') {
+                  toggleAutoDelete(widgetReminder);
+                } else if (result == 'viewreminder') {
+                  widgetReminder.hasReminder = !widgetReminder.hasReminder;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -47,6 +74,26 @@ class ReminderWidget extends StatelessWidget {
                   value: 'delete',
                   child: Text('Delete'),
                 ),
+                const PopupMenuItem<String>(
+                  value: 'autodelete',
+                  child: Text('Set to auto delete'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'editdate',
+                  child: Text('set/edit reminder DATE'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'edittime',
+                  child: Text('set/edit reminder TIME'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'viewreminder',
+                  child: Text('View reminder time'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'deletewhen',
+                  child: Text('Auto delete when checked off'),
+                ),
               ],
             ),
           ],
@@ -54,4 +101,6 @@ class ReminderWidget extends StatelessWidget {
       ),
     );
   }
+
+  //void setState(Null Function() param0) {}
 }

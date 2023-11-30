@@ -26,9 +26,27 @@ class ReminderView extends StatefulWidget {
 class ReminderViewState extends State<ReminderView> {
   final _controller = TextEditingController();
 
+/*
+   @override
+  void initState() {
+    super.initState();
+    if (widget.note.reminderTime != null) {
+      selectedTime = TimeOfDay.fromDateTime(widget.note.reminderTime);
+      selectedDate = widget.note.reminderTime;
+    } else {
+      selectedTime = TimeOfDay.now();
+      selectedDate = DateTime.now();
+    }
+  }
+*/
+
   void ClickedCheckBox(bool value, int index) {
     setState(() {
       var reminderTemp = widget.note.reminderList[index];
+      if (!reminderTemp.isDone && reminderTemp.deleteOnCompletion) {
+        //delete reminderTemp.isDone = !reminderTemp.isDone;
+        deleteReminder(widget.note.reminderList[index]);
+      }
       reminderTemp.isDone = !reminderTemp.isDone;
     });
   }
@@ -63,6 +81,42 @@ class ReminderViewState extends State<ReminderView> {
     Navigator.of(context).pop();
   }
 
+  void _selectDate(BuildContext context, Reminder currentReminder) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
+
+    if (pickedDate != null && pickedDate != currentReminder.reminderTime) {
+      setState(() {
+        currentReminder.reminderTime = pickedDate;
+      });
+    }
+  }
+
+  void _selectTime(BuildContext context, Reminder currentReminder) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null &&
+        pickedTime != TimeOfDay.fromDateTime(currentReminder.reminderTime)) {
+      setState(() {
+        var tempReminder = currentReminder.reminderTime;
+        DateTime temp = DateTime(tempReminder.year, tempReminder.month,
+            tempReminder.day, pickedTime.hour, pickedTime.minute);
+        currentReminder.reminderTime = temp;
+      });
+    }
+  }
+
+  void _toggleAutoDelete(BuildContext context, Reminder currentReminder) {
+    currentReminder.deleteOnCompletion = !currentReminder.deleteOnCompletion;
+  }
+
   void editReminder(Reminder reminder) {
     _controller.text = reminder.text; // Set the current text in the controller
     showDialog(
@@ -90,6 +144,10 @@ class ReminderViewState extends State<ReminderView> {
                 Navigator.of(context).pop();
               },
             ),
+            TextButton(
+              onPressed: () {},
+              child: Text('Adjust time'),
+            ),
           ],
         );
       },
@@ -102,6 +160,8 @@ class ReminderViewState extends State<ReminderView> {
     });
     // Update the provider or database if needed
   }
+
+  void EditReminderTime(Reminder reminder) {}
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +186,11 @@ class ReminderViewState extends State<ReminderView> {
             onChanged: (value) => ClickedCheckBox(value!, index),
             onEdit: (Reminder r) => editReminder(r),
             onDelete: (Reminder r) => deleteReminder(r),
+            onEditDate: (Reminder r) => _selectDate(context, reminder),
+            onEditTime: (Reminder r) => _selectTime(context, reminder),
+            toggleAutoDelete: (Reminder r) =>
+                _toggleAutoDelete(context, reminder),
+            toggleTimeView: (Reminder r) => _selectDate(context, reminder),
           );
         },
       ),

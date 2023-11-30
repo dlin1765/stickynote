@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/noteData.dart';
+import 'package:myapp/classes/reminder.dart';
 import 'package:myapp/screens/noteview.dart';
 import 'package:myapp/screens/reminderview.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Note> notes = []; // Use a List for notes
-
+  List<Reminder> reminders = [];
   // HOME PAGE SHOULD PROBABLY HAVE A LIST OF REMINDERS TOO
 
   // Initialize the notification plugin
@@ -108,13 +109,25 @@ class _HomePageState extends State<HomePage> {
       // Clear and rebuild the List with notes from the NoteData
       notes.clear();
       notes.addAll(value.GetNoteList());
-
+      reminders.addAll(value.GetReminders());
       // Sort notes based on time remaining
-      notes.sort((a, b) => a.reminderTime.compareTo(b.reminderTime));
+      // notes.sort((a, b) => a.reminderTime.compareTo(b.reminderTime));
 
       return Scaffold(
         backgroundColor: Colors.amberAccent,
         appBar: AppBar(
+          actions: [
+            PopupMenuButton<String>(
+                onSelected: (String result) {
+                  if (result == 'allreminders') {}
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'allreminders',
+                        child: Text('view all reminders'),
+                      ),
+                    ]),
+          ],
           elevation: 0.0,
           title: const Text("Sticky Note+"),
           centerTitle: true,

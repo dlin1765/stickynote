@@ -4,7 +4,7 @@ import 'note.dart';
 //import 'package:provider/provider.dart';
 
 class NoteData extends ChangeNotifier {
-  List<Reminder> temps = [];
+  List<Reminder> ReminderList = [];
   List<Note> NoteList = [
     Note(
         id: 0,
@@ -30,6 +30,13 @@ class NoteData extends ChangeNotifier {
   void DeleteNote(Note note) {
     NoteList.removeWhere((n) => n.id == note.id);
     notifyListeners();
+  }
+
+  List<Reminder> GetReminders() {
+    for (int i = 0; i < NoteList.length; i++) {
+      ReminderList.addAll(NoteList[i].reminderList);
+    }
+    return ReminderList;
   }
 
   // void CreateReminder()
