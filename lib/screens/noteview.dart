@@ -336,7 +336,7 @@ class _NoteViewState extends State<NoteView> {
                       child: QuillEditor(
                         focusNode: _focusNode,
 
-                        //customElementsEmbedBuilder: customElementsEmbedBuilder,
+                        //customElementsEmbedBuilder: customElementsEmbedBuilder,oned
                         scrollController: ScrollController(),
                         configurations:
                             const QuillEditorConfigurations(readOnly: false),
@@ -406,6 +406,7 @@ class _NoteViewState extends State<NoteView> {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+    //print('times up');
   }
 }
 

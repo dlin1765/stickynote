@@ -2,11 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/reminder.dart';
 import 'package:myapp/classes/noteData.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:myapp/screens/noteview.dart';
+import 'package:myapp/screens/reminderview.dart';
 import 'package:myapp/util/ReminderBox.dart';
 import 'package:myapp/util/reminderwidget.dart';
+import 'package:provider/provider.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:provider/provider.dart';
 
 class ReminderView extends StatefulWidget {
@@ -39,6 +46,37 @@ class ReminderViewState extends State<ReminderView> {
     }
   }
 */
+  void _scheduleNotification(
+      DateTime notificationTime, Reminder reminder) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'my_channel_id',
+      'my_reminder',
+      channelDescription: 'Receive reminders from noteapp',
+      importance: Importance.max,
+      priority: Priority.high,
+      icon: 'app_icon',
+    );
+
+    const IOSNotificationDetails iOSPlatformChannelSpecifics =
+        IOSNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Sticky Note+',
+      'Reminder for: ' + reminder.text,
+      tz.TZDateTime.from(notificationTime, tz.local),
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+    //print('asldkfjaskdf');
+  }
 
   void ClickedCheckBox(bool value, int index) {
     setState(() {
@@ -111,6 +149,7 @@ class ReminderViewState extends State<ReminderView> {
         currentReminder.reminderTime = temp;
       });
     }
+    _scheduleNotification(currentReminder.reminderTime, currentReminder);
   }
 
   void _toggleAutoDelete(BuildContext context, Reminder currentReminder) {

@@ -180,16 +180,14 @@ class _HomePageState extends State<HomePage> {
                               // Display note text
                             ),
 
-                            /*
-                          Text(
-                            'Time Remaining: $timeRemaining',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                            Text(
+                              'Time Remaining: $timeRemaining',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                              // Display time remaining
                             ),
-                            // Display time remaining
-                          ),
-                          */
 
                             //THIS DISPLAYS THE ID OF THE NOTE JUST SO I CAN DEBUG
                             //Text(note.id.toString()),

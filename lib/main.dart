@@ -142,9 +142,9 @@ void main() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
+  //await Hive.initFlutter();
 
-  var box = await Hive.openBox('mydata');
+  //var box = await Hive.openBox('mydata');
   // Initialize the FlutterLocalNotificationsPlugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
