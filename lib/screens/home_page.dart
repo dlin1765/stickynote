@@ -9,6 +9,7 @@ import 'package:myapp/screens/reminderview.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:myapp/screens/allreminderpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -103,6 +104,27 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _navigateToAllReminders() {
+    List<Reminder> temp1 = [];
+    for (int i = 0; i < notes.length; i++) {
+      temp1.addAll(notes[i].reminderList);
+    }
+    Note(id: -1, text: '', reminderTime: DateTime.now(), reminderList: temp1);
+    Note note1;
+    final noteData = Provider.of<NoteData>(context, listen: false);
+    noteData.GetReminders();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ReminderView(
+                note: Note(
+                    id: -1,
+                    text: '',
+                    reminderTime: DateTime.now(),
+                    reminderList: temp1),
+                noteData: noteData)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteData>(builder: (context, value, child) {
@@ -119,7 +141,9 @@ class _HomePageState extends State<HomePage> {
           actions: [
             PopupMenuButton<String>(
                 onSelected: (String result) {
-                  if (result == 'allreminders') {}
+                  if (result == 'allreminders') {
+                    _navigateToAllReminders();
+                  }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                       const PopupMenuItem<String>(
