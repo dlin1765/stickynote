@@ -24,22 +24,14 @@ class _HomePageState extends State<HomePage> {
   List<Reminder> reminders = [];
   List<Note> tempList = [];
 
-  //final _myData = Hive.box('mydata');
-  //HiveDatabase hiveDb = HiveDatabase();
-  // HOME PAGE SHOULD PROBABLY HAVE A LIST OF REMINDERS TOO
-
   // Initialize the notification plugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
-    //_myData.deleteFromDisk();
-
     super.initState();
     Provider.of<NoteData>(context, listen: false).initHiveNotes();
-    //Provider.of<NoteData>(context, listen: false).initHiveNotes();
-    // Initialize the notification plugin
     _initializeNotifications();
   }
 
@@ -67,6 +59,36 @@ class _HomePageState extends State<HomePage> {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  void _scheduleNotification(DateTime notificationTime, Note remNote) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'my_channel_id',
+      'my_reminder',
+      channelDescription: 'Receive reminders from noteapp',
+      importance: Importance.max,
+      priority: Priority.high,
+      icon: 'app_icon',
+    );
+
+    const IOSNotificationDetails iOSPlatformChannelSpecifics =
+        IOSNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Sticky Note+',
+      'Reminder for: ' + remNote.title,
+      tz.TZDateTime.from(notificationTime, tz.local),
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
   void CreateNewNote() {
     int id =
         DateTime.now().millisecondsSinceEpoch; // Unique ID based on timestamp
@@ -85,7 +107,6 @@ class _HomePageState extends State<HomePage> {
                   isNewNote: isNewNote,
                   noteData: Provider.of<NoteData>(context, listen: false),
                 )));
-    //saveNotesReminders();
   }
 
   void GoToReminderPage(Note note) {
@@ -141,6 +162,39 @@ class _HomePageState extends State<HomePage> {
                 noteData: noteData)));
   }
 
+  Future<void> _selectDate(BuildContext context, Note idNote) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
+
+    if (pickedDate != null && pickedDate != idNote.reminderTime) {
+      setState(() {
+        idNote.reminderTime = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context, Note idNote) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null &&
+        pickedTime != TimeOfDay.fromDateTime(idNote.reminderTime)) {
+      setState(() {
+        var tempReminder = idNote.reminderTime;
+        DateTime temp = DateTime(tempReminder.year, tempReminder.month,
+            tempReminder.day, pickedTime.hour, pickedTime.minute);
+        idNote.reminderTime = temp;
+      });
+    }
+    _scheduleNotification(idNote.reminderTime, idNote);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteData>(
@@ -165,7 +219,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text('view all reminders'),
                       ),
                       const PopupMenuItem<String>(
-                          value: 'delete all', child: Text('Delete all notes'))
+                          value: 'delete all', child: Text('Debug'))
                     ]),
           ],
           elevation: 0.0,
@@ -215,14 +269,18 @@ class _HomePageState extends State<HomePage> {
                                   if (result == 'edit') {
                                     String temp =
                                         value.GetNoteList()[index].text;
-                                    //print('this is what the note has $temp');
-
                                     GoToEditNotePage(
                                         value.GetNoteList()[index], false);
                                   } else if (result == 'delete') {
                                     Provider.of<NoteData>(context,
                                             listen: false)
                                         .DeleteNote(value.GetNoteList()[index]);
+                                  } else if (result == 'setdate') {
+                                    _selectDate(
+                                        context, value.GetNoteList()[index]);
+                                  } else if (result == 'settime') {
+                                    _selectTime(
+                                        context, value.GetNoteList()[index]);
                                   }
                                 },
                                 itemBuilder: (BuildContext context) =>
@@ -234,6 +292,14 @@ class _HomePageState extends State<HomePage> {
                                   const PopupMenuItem<String>(
                                     value: 'delete',
                                     child: Text('Delete'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'setdate',
+                                    child: Text('Set Date'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'settime',
+                                    child: Text('Set Time'),
                                   ),
                                 ],
                               ),

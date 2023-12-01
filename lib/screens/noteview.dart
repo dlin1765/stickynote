@@ -42,7 +42,6 @@ class _NoteViewState extends State<NoteView> {
   late TimeOfDay selectedTime;
   late DateTime selectedDate;
   final _myData = Hive.box('mydata');
-  //HiveDatabase hiveDb = HiveDatabase();
 
   @override
   void initState() {
@@ -52,22 +51,12 @@ class _NoteViewState extends State<NoteView> {
     _textController = TextEditingController(text: widget.note.text);
 
     tz.initializeTimeZones(); // Initialize the tz library
-
-    if (widget.note.reminderTime != null) {
-      selectedTime = TimeOfDay.fromDateTime(widget.note.reminderTime);
-      selectedDate = widget.note.reminderTime;
-    } else {
-      selectedTime = TimeOfDay.now();
-      selectedDate = DateTime.now();
-    }
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _textController.dispose();
-    //quillController.dispose();
-
     super.dispose();
   }
 
@@ -97,7 +86,7 @@ class _NoteViewState extends State<NoteView> {
           id: i,
           title: widget.note.title,
           text: text,
-          reminderTime: widget.note.reminderTime,
+          reminderTime: DateTime.now(),
           reminderList: []),
     ); // date time is temporary
   }
@@ -105,11 +94,7 @@ class _NoteViewState extends State<NoteView> {
   void updateNote() {
     String newText = quillController.document.toPlainText();
     Provider.of<NoteData>(context, listen: false)
-        .updateNote(widget.note, newText, widget.note.reminderTime);
-    /*
-    hiveDb.saveNotesReminders(
-        Provider.of<NoteData>(context, listen: false).GetNoteList());
-        */
+        .updateNote(widget.note, newText);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -176,8 +161,6 @@ class _NoteViewState extends State<NoteView> {
       ),
       body: Padding(
         padding: EdgeInsets.all(15.0),
-        //var QuillEditor,
-
         child: Container(
           padding: EdgeInsets.all(28),
           child: Column(
@@ -212,8 +195,6 @@ class _NoteViewState extends State<NoteView> {
                                 options: const QuillToolbarHistoryButtonOptions(
                                     isUndo: false),
                               ),
-
-                              //QuillToolbarCustomButtonExtraOptions(controller: controller, context: context, onPressed: onPressed)
                             ];
                           }),
                     ),
@@ -221,8 +202,6 @@ class _NoteViewState extends State<NoteView> {
                       height: 150, // size of the box
                       child: QuillEditor(
                         focusNode: _focusNode,
-
-                        //customElementsEmbedBuilder: customElementsEmbedBuilder,oned
                         scrollController: ScrollController(),
                         configurations:
                             const QuillEditorConfigurations(readOnly: false),
@@ -248,7 +227,6 @@ class _NoteViewState extends State<NoteView> {
       priority: Priority.high,
       icon: 'app_icon',
     );
-
     const IOSNotificationDetails iOSPlatformChannelSpecifics =
         IOSNotificationDetails();
 
@@ -266,7 +244,6 @@ class _NoteViewState extends State<NoteView> {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
-    //print('times up');
   }
 }
 

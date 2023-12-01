@@ -7,20 +7,7 @@ import 'note.dart';
 class NoteData extends ChangeNotifier {
   final db = HiveDatabase();
   List<Reminder> ReminderList = [];
-  List<Note> NoteList = [
-    /*
-    Note(
-        id: 0,
-        text: "test note",
-        reminderTime: DateTime.now(),
-        reminderList: []), // Include reminderTime
-    Note(
-        id: 1,
-        text: "test note 2",
-        reminderTime: DateTime.now(),
-        reminderList: []), // Include reminderTime
-        */
-  ];
+  List<Note> NoteList = [];
 
   void initHiveNotes() {
     NoteList = db.loadNotes();
@@ -50,9 +37,7 @@ class NoteData extends ChangeNotifier {
     return ReminderList;
   }
 
-  // void CreateReminder()
-
-  void updateNote(Note note, String newText, DateTime? reminderTime) {
+  void updateNote(Note note, String newText) {
     // need to edit this function to update the reminders field in note
     for (int i = 0; i < NoteList.length; i++) {
       if (NoteList[i].id == note.id) {

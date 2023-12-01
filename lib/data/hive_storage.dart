@@ -17,7 +17,6 @@ class HiveDatabase {
 
       for (int i = 0; i < savedNotes.length; i++) {
         print('saved notes length: ' + savedNotes.length.toString());
-        //List<dynamic> savedReminders =
         currentSavedReminders = [];
         for (int y = 0; y < savedNotes[i][3].length; y++) {
           print('reminder list length: ' + savedNotes[i][3].length.toString());
@@ -40,11 +39,10 @@ class HiveDatabase {
           id: savedNotes[i][0],
           title: savedNotes[i][1],
           text: savedNotes[i][2],
-          reminderTime: DateTime.now(), //savedNotes[i][3],
-          reminderList: currentSavedReminders, //savedNotes[i][3],
+          reminderTime: DateTime.now(),
+          reminderList: currentSavedReminders,
         );
         currentSavedNotes.add(idNote);
-        //print(currentSavedNotes[i].title + '__' + currentSavedNotes[i].text);
       }
     } else {
       print("nothing in hive");
@@ -61,8 +59,6 @@ class HiveDatabase {
   }
 
   void loadData() {
-    //_myData.put("ALL_NOTES", notes);
-    //_myData.put("ALL_NOTES", notes);
     notes = _myData.get("ALL_NOTES");
   }
 
@@ -105,7 +101,6 @@ class HiveDatabase {
       String text = n.text;
       List<dynamic> reminderList = []; // store all the fields of the
       print('title = ' + title);
-      //List<Reminder> hiveStorageReminders = [];
       for (var reminder in n.reminderList) {
         int ids = reminder.id;
         String texts = reminder.text;
@@ -117,8 +112,6 @@ class HiveDatabase {
         int year = reminder.reminderTime.year;
         int hour = reminder.reminderTime.hour;
         int minute = reminder.reminderTime.minute;
-        //DateTime reminderTimes = reminder.reminderTime;
-        //DateTime destroyTime = reminder.destroyTime;
         reminderList.add([
           ids,
           texts,

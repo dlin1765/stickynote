@@ -42,14 +42,6 @@ class ReminderWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Spacer(),
-            Text((() {
-              if (widgetReminder.hasReminder) {
-                return widgetReminder.reminderTime.toString().substring(0, 16);
-              } else {
-                return " ";
-              }
-            })()),
-            //widgetReminder.reminderTime.toString().substring(0, 16)
             PopupMenuButton<String>(
               onSelected: (String result) {
                 if (result == 'edit') {
@@ -65,7 +57,7 @@ class ReminderWidget extends StatelessWidget {
                 } else if (result == 'deletewhen') {
                   toggleAutoDelete(widgetReminder);
                 } else if (result == 'viewreminder') {
-                  widgetReminder.hasReminder = !widgetReminder.hasReminder;
+                  toggleTimeView(widgetReminder);
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -100,6 +92,4 @@ class ReminderWidget extends StatelessWidget {
       ),
     );
   }
-
-  //void setState(Null Function() param0) {}
 }

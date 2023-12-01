@@ -32,20 +32,6 @@ class ReminderView extends StatefulWidget {
 
 class ReminderViewState extends State<ReminderView> {
   final _controller = TextEditingController();
-
-/*
-   @override
-  void initState() {
-    super.initState();
-    if (widget.note.reminderTime != null) {
-      selectedTime = TimeOfDay.fromDateTime(widget.note.reminderTime);
-      selectedDate = widget.note.reminderTime;
-    } else {
-      selectedTime = TimeOfDay.now();
-      selectedDate = DateTime.now();
-    }
-  }
-*/
   void _scheduleNotification(
       DateTime notificationTime, Reminder reminder) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -75,14 +61,12 @@ class ReminderViewState extends State<ReminderView> {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
-    //print('asldkfjaskdf');
   }
 
   void ClickedCheckBox(bool value, int index) {
     setState(() {
       var reminderTemp = widget.note.reminderList[index];
       if (!reminderTemp.isDone && reminderTemp.deleteOnCompletion) {
-        //delete reminderTemp.isDone = !reminderTemp.isDone;
         deleteReminder(widget.note.reminderList[index]);
       }
       reminderTemp.isDone = !reminderTemp.isDone;
@@ -90,6 +74,7 @@ class ReminderViewState extends State<ReminderView> {
   }
 
   void createNewTask() {
+    _controller.clear;
     showDialog(
       context: context,
       builder: (context) {
@@ -152,6 +137,27 @@ class ReminderViewState extends State<ReminderView> {
     _scheduleNotification(currentReminder.reminderTime, currentReminder);
   }
 
+  void _showReminderDate(BuildContext context, Reminder currentReminder) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Reminder time'),
+          content:
+              Text(currentReminder.reminderTime.toString().substring(0, 16)),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _toggleAutoDelete(BuildContext context, Reminder currentReminder) {
     currentReminder.deleteOnCompletion = !currentReminder.deleteOnCompletion;
   }
@@ -183,10 +189,6 @@ class ReminderViewState extends State<ReminderView> {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              onPressed: () {},
-              child: Text('Adjust time'),
-            ),
           ],
         );
       },
@@ -212,7 +214,10 @@ class ReminderViewState extends State<ReminderView> {
         elevation: 0,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: createNewTask,
+        onPressed: () {
+          _controller.clear;
+          createNewTask();
+        },
         child: Icon(Icons.add),
         focusColor: Colors.blueGrey[300],
       ),
@@ -229,7 +234,8 @@ class ReminderViewState extends State<ReminderView> {
             onEditTime: (Reminder r) => _selectTime(context, reminder),
             toggleAutoDelete: (Reminder r) =>
                 _toggleAutoDelete(context, reminder),
-            toggleTimeView: (Reminder r) => _selectDate(context, reminder),
+            toggleTimeView: (Reminder r) =>
+                _showReminderDate(context, reminder),
             deleteWhenOver: (Reminder r) => _selectDate(context, reminder),
           );
         },

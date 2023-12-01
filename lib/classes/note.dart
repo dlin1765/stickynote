@@ -5,10 +5,10 @@ class Note extends HiveObject {
   final int id;
 
   String title;
-
+  DateTime reminderTime;
   String text;
 
-  DateTime reminderTime; //Use DateTime for reminder time
+  //DateTime reminderTime; //Use DateTime for reminder time
 
   List<Reminder> reminderList;
   /*
