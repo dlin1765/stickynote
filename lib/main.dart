@@ -123,28 +123,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 */
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:myapp/classes/noteadapter.dart';
 import 'package:provider/provider.dart';
-//import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/noteData.dart';
 import 'screens/home_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-/*
-void main() async {
-  await Hive.initFlutter();
-
-  var box = await Hive.openBox('mybox');
-}
-*/
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //await Hive.initFlutter();
-
-  //var box = await Hive.openBox('mydata');
+  await Hive.initFlutter();
+  Hive.registerAdapter(NoteAdapter());
+  var box = await Hive.openBox('mydata');
   // Initialize the FlutterLocalNotificationsPlugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -173,10 +168,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => NoteData(),
-        builder: (context, child) => MaterialApp(
+        builder: (context, child) => const MaterialApp(
               debugShowCheckedModeBanner: false,
               home: HomePage(),
-              theme: ThemeData(primarySwatch: Colors.yellow),
+              //theme: ThemeData(primarySwatch: Colors.yellow),
             ));
   }
 }

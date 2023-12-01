@@ -21,7 +21,8 @@ class _AllRemindersPageState extends State<AllRemindersPage> {
         itemCount: widget.reminders.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(widget.reminders[index].title),
+            title: Text(widget
+                .reminders[index].text), // might be wrong have to double check
           );
         },
       ),

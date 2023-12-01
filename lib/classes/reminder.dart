@@ -1,11 +1,26 @@
-class Reminder {
+import 'package:hive/hive.dart';
+
+@HiveType(typeId: 1)
+class Reminder extends HiveObject {
+  @HiveField(0)
   final int id;
-  String title;
+
+  @HiveField(1)
   String text;
+
+  @HiveField(2)
   bool isDone;
+
+  @HiveField(3)
   bool deleteOnCompletion;
+
+  @HiveField(4)
   bool hasReminder;
-  DateTime reminderTime; //Use DateTime for reminder time
+
+  @HiveField(5)
+  DateTime reminderTime;
+
+  @HiveField(6) //Use DateTime for reminder time
   DateTime destroyTime;
   /*
   I want the note to be able to store other widgets inside, so might have to have fields not just a string for the data
@@ -14,10 +29,9 @@ class Reminder {
   Reminder({
     required this.id,
     required this.text,
+    this.isDone = false,
     this.deleteOnCompletion = false,
-    this.isDone = true,
     this.hasReminder = false,
-    this.title = '',
     required this.reminderTime, // Add this parameter to the constructor
     required this.destroyTime,
   });

@@ -1,10 +1,15 @@
+import 'package:hive/hive.dart';
 import 'package:myapp/classes/reminder.dart';
 
-class Note {
+class Note extends HiveObject {
   final int id;
+
   String title;
+
   String text;
+
   DateTime reminderTime; //Use DateTime for reminder time
+
   List<Reminder> reminderList;
   /*
   I want the note to be able to store other widgets inside, so might have to have fields not just a string for the data

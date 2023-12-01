@@ -10,6 +10,7 @@ class ReminderWidget extends StatelessWidget {
   final Function(Reminder) onEditTime;
   final Function(Reminder) toggleTimeView;
   final Function(Reminder) toggleAutoDelete;
+  final Function(Reminder) deleteWhenOver;
   late TimeOfDay selectedTime;
   late DateTime selectedDate;
 
@@ -19,6 +20,7 @@ class ReminderWidget extends StatelessWidget {
     this.onChanged,
     required this.onEdit,
     required this.onDelete,
+    required this.deleteWhenOver,
     required this.onEditDate,
     required this.onEditTime,
     required this.toggleTimeView,
@@ -55,6 +57,7 @@ class ReminderWidget extends StatelessWidget {
                 } else if (result == 'delete') {
                   onDelete(widgetReminder);
                 } else if (result == 'autodelete') {
+                  deleteWhenOver(widgetReminder);
                 } else if (result == 'editdate') {
                   onEditDate(widgetReminder);
                 } else if (result == 'edittime') {
@@ -73,10 +76,6 @@ class ReminderWidget extends StatelessWidget {
                 const PopupMenuItem<String>(
                   value: 'delete',
                   child: Text('Delete'),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'autodelete',
-                  child: Text('Set to auto delete'),
                 ),
                 const PopupMenuItem<String>(
                   value: 'editdate',

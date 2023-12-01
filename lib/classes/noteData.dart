@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/classes/reminder.dart';
+import 'package:myapp/data/hive_storage.dart';
 import 'note.dart';
 //import 'package:provider/provider.dart';
 
 class NoteData extends ChangeNotifier {
+  final db = HiveDatabase();
   List<Reminder> ReminderList = [];
   List<Note> NoteList = [
+    /*
     Note(
         id: 0,
         text: "test note",
@@ -16,7 +19,12 @@ class NoteData extends ChangeNotifier {
         text: "test note 2",
         reminderTime: DateTime.now(),
         reminderList: []), // Include reminderTime
+        */
   ];
+
+  void initHiveNotes() {
+    NoteList = db.loadNotes();
+  }
 
   List<Note> GetNoteList() {
     return NoteList;
@@ -24,11 +32,14 @@ class NoteData extends ChangeNotifier {
 
   void CreateNewNote(Note addedNote) {
     NoteList.add(addedNote);
+    db.saveNotesReminders(NoteList);
     notifyListeners();
   }
 
   void DeleteNote(Note note) {
-    NoteList.removeWhere((n) => n.id == note.id);
+    //NoteList.removeWhere((n) => n.id == note.id);
+    NoteList.remove(note);
+    db.saveNotesReminders(NoteList);
     notifyListeners();
   }
 
@@ -41,17 +52,14 @@ class NoteData extends ChangeNotifier {
 
   // void CreateReminder()
 
-  void updateNote(int id, String newText, DateTime? reminderTime) {
+  void updateNote(Note note, String newText, DateTime? reminderTime) {
     // need to edit this function to update the reminders field in note
-    for (var note in NoteList) {
-      if (note.id == id) {
-        note.text = newText;
-        if (reminderTime != null) {
-          note.reminderTime = reminderTime; // Update reminder time if provided
-        }
-        break; // Stop the loop once the note is found and updated
+    for (int i = 0; i < NoteList.length; i++) {
+      if (NoteList[i].id == note.id) {
+        NoteList[i].text = newText;
       }
     }
+    db.saveNotesReminders(NoteList);
 
     notifyListeners();
   }

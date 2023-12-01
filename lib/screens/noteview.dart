@@ -3,10 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
+import 'package:hive/hive.dart';
 import 'package:myapp/classes/note.dart';
 import 'package:myapp/classes/reminder.dart';
 import 'package:myapp/classes/noteData.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:myapp/data/hive_storage.dart';
+import 'package:myapp/screens/home_page.dart';
 import 'package:myapp/screens/reminderview.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -38,6 +41,8 @@ class _NoteViewState extends State<NoteView> {
   QuillController quillController = QuillController.basic();
   late TimeOfDay selectedTime;
   late DateTime selectedDate;
+  final _myData = Hive.box('mydata');
+  //HiveDatabase hiveDb = HiveDatabase();
 
   @override
   void initState() {
@@ -100,7 +105,11 @@ class _NoteViewState extends State<NoteView> {
   void updateNote() {
     String newText = quillController.document.toPlainText();
     Provider.of<NoteData>(context, listen: false)
-        .updateNote(widget.note.id, newText, widget.note.reminderTime);
+        .updateNote(widget.note, newText, widget.note.reminderTime);
+    /*
+    hiveDb.saveNotesReminders(
+        Provider.of<NoteData>(context, listen: false).GetNoteList());
+        */
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -131,89 +140,6 @@ class _NoteViewState extends State<NoteView> {
     }
   }
 
-  Future<void> _addEditList(BuildContext context, {Document? document}) async {
-    final isEditing = document != null;
-    final quillEditorController = QuillController(
-      document: document ?? Document(),
-      selection: const TextSelection.collapsed(offset: 0),
-    );
-
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-          titlePadding: const EdgeInsets.only(left: 16, top: 8),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('${isEditing ? 'Edit' : 'Add'} note'),
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close),
-              )
-            ],
-          ),
-          content: QuillProvider(
-            configurations: QuillConfigurations(
-              controller: quillEditorController,
-              sharedConfigurations: const QuillSharedConfigurations(
-                locale: Locale('de'),
-              ),
-            ),
-            child: QuillEditor.basic(),
-          )),
-    );
-
-    if (quillEditorController.document.isEmpty()) return;
-
-    final block = BlockEmbed.custom(
-      NotesBlockEmbed.fromDocument(quillEditorController.document),
-    );
-    final controller = quillController;
-    final index = controller.selection.baseOffset;
-    final length = controller.selection.extentOffset - index;
-
-    if (isEditing) {
-      final offset =
-          getEmbedNode(controller, controller.selection.start).offset;
-      controller.replaceText(
-          offset, 1, block, TextSelection.collapsed(offset: offset));
-    } else {
-      controller.replaceText(index, length, block, null);
-    }
-  }
-
-  Widget customElementsEmbedBuilder(
-    BuildContext context,
-    QuillController controller,
-    CustomBlockEmbed block,
-    bool readOnly,
-    void Function(GlobalKey videoContainerKey)? onVideoInit,
-  ) {
-    switch (block.type) {
-      case 'notes':
-        final notes = NotesBlockEmbed(block.data).document;
-
-        return Material(
-          color: Colors.transparent,
-          child: ListTile(
-            title: Text(
-              notes.toPlainText().replaceAll('\n', ' '),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            leading: const Icon(Icons.notes),
-            onTap: () => _addEditList(context, document: notes),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: const BorderSide(color: Colors.grey),
-            ),
-          ),
-        );
-      default:
-        return const SizedBox();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //final notes = NotesBlockEmbed(node.value.data).document;
@@ -233,6 +159,7 @@ class _NoteViewState extends State<NoteView> {
               addNewNote(Provider.of<NoteData>(context, listen: false)
                   .GetNoteList()
                   .length);
+              //hiveDb.loadNotes();
             } else {
               updateNote();
             }
@@ -241,38 +168,6 @@ class _NoteViewState extends State<NoteView> {
           },
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () {
-              widget.note.title = _titleController.text;
-              widget.note.text = _textController.text;
-
-              final selectedDateTime = DateTime(
-                selectedDate.year,
-                selectedDate.month,
-                selectedDate.day,
-                selectedTime.hour,
-                selectedTime.minute,
-              );
-
-              widget.note.reminderTime = selectedDateTime;
-
-              if (widget.isNewNote) {
-                widget.noteData.CreateNewNote(widget.note);
-              } else {
-                widget.noteData.updateNote(
-                  widget.note.id,
-                  widget.note
-                      .text, // maybe not correct maybe have to use the text
-                  widget.note.reminderTime,
-                );
-              }
-
-              _scheduleNotification(widget.note.reminderTime);
-
-              Navigator.pop(context);
-            },
-          ),
           IconButton(
             onPressed: () => GoToReminderPage(widget.note, widget.noteData),
             icon: Icon(Icons.note_add),
@@ -291,15 +186,6 @@ class _NoteViewState extends State<NoteView> {
                 controller: _titleController,
                 decoration: InputDecoration(hintText: 'Enter title'),
               ),
-              /*
-              Expanded(
-                child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(hintText: 'Enter note text'),
-                  maxLines: null,
-                ),
-              ),
-              */
               QuillProvider(
                 configurations: QuillConfigurations(
                   controller: quillController,
@@ -344,32 +230,6 @@ class _NoteViewState extends State<NoteView> {
                     )
                   ],
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _selectDate(context);
-                },
-                child: Text(
-                  'Set Reminder Date',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              Text(
-                'Reminder Date: ${selectedDate.toLocal()}',
-                style: TextStyle(fontSize: 16),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _selectTime(context);
-                },
-                child: Text(
-                  'Set Reminder Time',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              Text(
-                'Reminder Time: ${selectedTime.format(context)}',
-                style: TextStyle(fontSize: 16),
               ),
             ],
           ),

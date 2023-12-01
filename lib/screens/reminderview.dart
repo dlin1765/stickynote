@@ -230,6 +230,7 @@ class ReminderViewState extends State<ReminderView> {
             toggleAutoDelete: (Reminder r) =>
                 _toggleAutoDelete(context, reminder),
             toggleTimeView: (Reminder r) => _selectDate(context, reminder),
+            deleteWhenOver: (Reminder r) => _selectDate(context, reminder),
           );
         },
       ),
