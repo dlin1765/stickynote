@@ -1,9 +1,9 @@
-<center> # Sticky Note+ <center/>
+<center> # Sticky Note+ </center>
 
-<center>A simple notetaking app with reminder and timer functionalities<center/>
+<center>A simple notetaking app with reminder and timer functionalities</center>
 
 <center> ![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white) ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white) ![Visual Studio Code](https://    img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) ![Android Studio](https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white) 
-<center/>
+</center>
 
 
 ![homepageScreenshot](https://github.com/user-attachments/assets/4b3d0ad0-3a9d-486c-bc9a-c1000e394437)
